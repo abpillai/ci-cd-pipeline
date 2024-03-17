@@ -176,26 +176,8 @@ jobs:
     - name: Deploy to Amazon Linux EC2
       if: github.event_name == 'push'
       run: |
-        if [[ ${{ github.ref == 'refs/heads/feature/new' }} == true ]]; then
+        if [[ ${{ github.ref == 'refs/heads/master' }} == true ]]; then
           ssh -i $ssh-private-key -o StrictHostKeyChecking=no ${{ secrets.EC2_SSH_USER }}@${{ env.EC2_PUBLIC_IP }} <<EOF
-            sudo yum update -y
-            sudo yum install -y docker
-            sudo service docker start
-            sudo groupadd docker
-            sudo usermod -a -G docker ec2-user
-            newgrp docker
-            sudo systemctl restart docker
-            aws configure set region $AWS_REGION
-            aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
-            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-            docker stop dataMS-container || true
-            docker rm dataMS-container || true
-            docker run -d -p 80:8080 --name dataMS-container ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-        EOF
-        elif [[ ${{ github.ref == 'refs/heads/master' }} == true ]]; then
-          ssh -i $ssh-private-key -o StrictHostKeyChecking=no ${{ secrets.EC2_SSH_USER }}@${{ env.EC2_PUBLIC_IP_DEV }} <<EOF
             sudo yum update -y
             sudo yum install -y docker
             sudo service docker start
