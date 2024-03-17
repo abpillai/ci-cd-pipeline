@@ -11,7 +11,7 @@ on:
 
 env:
   AWS_REGION: me-central-1
-  ECR_REPOSITORY: terra-central-dev
+  ECR_REPOSITORY: apillai-ecr-repo
   IMAGE_TAG: ${{ github.repository_id }}${{ github.run_number }}
 
 jobs:
