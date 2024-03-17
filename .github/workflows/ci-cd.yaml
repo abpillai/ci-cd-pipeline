@@ -120,7 +120,7 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to EC2.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE=dev .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE=local .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "{image}={$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG}" >> $GITHUB_OUTPUT
     - name: List ECR images
@@ -161,15 +161,7 @@ jobs:
       run: |
         if [[ ${{ github.ref == 'refs/heads/master' }} == true ]]; then
           echo "${{ github.ref }}, master"
-          echo "EC2_PUBLIC_IP_PROD=$(terraform -chdir="terraform/environments/$BRANCH_NAME" output -raw public_dns)" >> $GITHUB_ENV
-        elif [[ ${{ github.ref == 'refs/heads/dev' }} == true ]]; then
-          echo "${{ github.ref }}, dev"
-          echo "EC2_PUBLIC_IP_DEV=$(terraform -chdir="terraform/environments/$BRANCH_NAME" output public_dns)" >> $GITHUB_ENV
-        elif [[ ${{ github.ref == 'refs/heads/feature/new' }} == true ]]; then
-          echo "${{ github.ref }}, new feature"
-          echo "EC2_PUBLIC_IP=$(terraform -chdir="terraform/environments/$BRANCH_NAME" output public_dns)" >> $GITHUB_ENV
-        else
-          echo "Unsupported branch for deployment"
+          echo "EC2_PUBLIC_IP=$(terraform -chdir="terraform/environments/$BRANCH_NAME" output -raw public_dns)" >> $GITHUB_ENV
         fi
       shell: bash
       env:
@@ -202,7 +194,7 @@ jobs:
             docker rm dataMS-container || true
             docker run -d -p 80:8080 --name dataMS-container ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
         EOF
-        elif [[ ${{ github.ref == 'refs/heads/dev' }} == true ]]; then
+        elif [[ ${{ github.ref == 'refs/heads/master' }} == true ]]; then
           ssh -i $ssh-private-key -o StrictHostKeyChecking=no ${{ secrets.EC2_SSH_USER }}@${{ env.EC2_PUBLIC_IP_DEV }} <<EOF
             sudo yum update -y
             sudo yum install -y docker
