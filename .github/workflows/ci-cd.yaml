@@ -76,7 +76,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: 'openjdk'
-        java-version: '1.8'
+        java-version: '8'
   
     - name: Cache Maven dependencies
       id: cache-maven
