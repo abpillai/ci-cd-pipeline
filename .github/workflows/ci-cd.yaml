@@ -224,6 +224,6 @@ jobs:
     - name: Destroy Terraform Infrastructure for Feature
       if: github.event_name == 'workflow_dispatch'
       run: |
-        terraform -chdir="terraform/environments/feature" destroy -auto-approve
+        terraform -chdir="terraform/environments/master" destroy -auto-approve
       env:
         TERRAFORM_PATH: ${{ github.workspace }}/terraform/environments/$BRANCH_NAME
