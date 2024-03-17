@@ -1,5 +1,5 @@
 # Build stage
-FROM java:openjdk-8 AS builder
+FROM openjdk:8-jre-alpine AS builder
 
 WORKDIR /app
 COPY pom.xml ./
@@ -13,7 +13,7 @@ RUN apk --no-cache add maven
 RUN mvn package -e
 
 # Final stage
-FROM java:openjdk-8
+FROM openjdk:8-jre-alpine
 
 ARG PROFILE
 ENV PROFILE=$PROFILE
