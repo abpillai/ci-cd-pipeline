@@ -3,7 +3,6 @@ FROM openjdk:8-jre-alpine AS builder
 
 WORKDIR /app
 COPY pom.xml ./
-COPY sonar-project.properties ./
 COPY src ./src
 
 # Install Maven
