@@ -25,7 +25,7 @@ jobs:
   
     - name: Cache Maven dependencies
       id: cache-maven
-      if: github.event_name == 'push'
+      if: github.event_name == 'workflow_dispatch'
       #This action allows caching dependencies 
       # and build outputs to improve workflow execution time.
       uses: actions/cache@v3
@@ -40,7 +40,7 @@ jobs:
       run: mvn dependency:tree
 
     - name: Build with Maven
-      if: github.event_name == 'push'
+      if: github.event_name == 'workflow_dispatch'
       run: mvn clean package -e
       
     - name: Configure AWS credentials
@@ -57,7 +57,7 @@ jobs:
         mask-password: 'false'
 
     - name: Build, tag and push image to Amazon ECR
-      if: github.event_name == 'push'
+      if: github.event_name == 'workflow_dispatch'
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -97,7 +97,7 @@ jobs:
       run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | cut -d'/' -f1)" >> $GITHUB_ENV
       
     - name: Assign EC2 Public IP
-      if: github.event_name == 'push'
+      if: github.event_name == 'workflow_dispatch'
       run: |
         if [[ ${{ github.ref == 'refs/heads/master' }} == true ]]; then
           echo "${{ github.ref }}, master"
@@ -112,7 +112,7 @@ jobs:
         mask-password: 'false'
 
     - name: Deploy to Amazon Linux EC2
-      if: github.event_name == 'push'
+      if: github.event_name == 'workflow_dispatch'
       run: |
         if [[ ${{ github.ref == 'refs/heads/master' }} == true ]]; then
           ssh -i $ssh-private-key -o StrictHostKeyChecking=no ${{ secrets.EC2_SSH_USER }}@${{ env.EC2_PUBLIC_IP }} <<EOF
@@ -137,7 +137,7 @@ jobs:
         fi
 
     - name: Delete previous images
-      if: github.event_name == 'push'
+      if: github.event_name == 'workflow_dispatch'
       run: |
         aws ecr list-images --repository-name $ECR_REPOSITORY --query 'imageIds[*]' --output text > images.txt
         while IFS= read -r imageId; do
