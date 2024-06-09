@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://vatandb.ch080qcqed5e.me-central-1.rds.amazonaws.com:5432/postgres
+    username: postgres
+    password: kqwmaYATPuAN1LZSOhkx
+  jpa:
+    show-sql: true
+    properties:
+      ## Hibernate Properties
+      # The SQL dialect makes Hibernate generate better SQL for the chosen database
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc.batch_size: 5
+        order_inserts: true
+        order_updates: true
+    # Hibernate ddl auto (create, create-drop, validate, update)
+    hibernate:
+      ddl-auto: update
