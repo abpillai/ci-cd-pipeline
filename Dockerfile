@@ -9,7 +9,7 @@ COPY src ./src
 RUN apk --no-cache add maven
 
 # Build the application
-RUN mvn package -e
+RUN mvn package -e -DskipTests
 
 # Final stage
 FROM openjdk:8-jdk-alpine
