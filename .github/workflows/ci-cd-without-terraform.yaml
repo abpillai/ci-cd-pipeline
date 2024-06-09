@@ -1,5 +1,8 @@
 name: CI/CD Pipeline without Terraform
 
+on:
+  workflow_dispatch:
+
 env:
   AWS_REGION: me-central-1
   ECR_REPOSITORY: apillai-ecr-repo
